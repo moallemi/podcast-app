@@ -22,6 +22,7 @@ plugins {
   alias(libs.plugins.hilt.gradle)
   alias(libs.plugins.ksp)
   alias(libs.plugins.kotlinx.serialization)
+  alias(libs.plugins.spotless)
 }
 
 android {
@@ -136,4 +137,13 @@ dependencies {
   androidTestImplementation(libs.androidx.test.core)
   androidTestImplementation(libs.androidx.test.ext.junit)
   androidTestImplementation(libs.androidx.test.runner)
+}
+
+spotless {
+  kotlin {
+    target("**/*.kt", "**/*.kts")
+    targetExclude("${layout.buildDirectory}/**/*.kt", "bin/**/*.kt", "buildSrc/**/*.kt")
+
+    ktlint()
+  }
 }
