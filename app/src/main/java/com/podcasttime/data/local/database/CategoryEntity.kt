@@ -14,20 +14,28 @@
  * limitations under the License.
  */
 
-pluginManagement {
-  repositories {
-    gradlePluginPortal()
-    google()
-    mavenCentral()
-  }
-}
-dependencyResolutionManagement {
-  repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-  repositories {
-    google()
-    mavenCentral()
-  }
-}
-rootProject.name = "Podcast Time"
+package com.podcasttime.data.local.database
 
-include(":app")
+import androidx.room.Dao
+import androidx.room.Entity
+import androidx.room.Insert
+import androidx.room.PrimaryKey
+import androidx.room.Query
+import kotlinx.coroutines.flow.Flow
+
+@Entity
+data class CategoryEntity(
+  val name: String,
+) {
+  @PrimaryKey(autoGenerate = true)
+  var uid: Int = 0
+}
+
+@Dao
+interface CategoryEntityDao {
+  @Query("SELECT * FROM categoryentity ORDER BY uid DESC LIMIT 10")
+  fun getCategoryEntitys(): Flow<List<CategoryEntity>>
+
+  @Insert
+  suspend fun insertCategoryEntity(item: CategoryEntity)
+}

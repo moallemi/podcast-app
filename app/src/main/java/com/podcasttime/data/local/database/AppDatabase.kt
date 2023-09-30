@@ -14,20 +14,12 @@
  * limitations under the License.
  */
 
-pluginManagement {
-  repositories {
-    gradlePluginPortal()
-    google()
-    mavenCentral()
-  }
-}
-dependencyResolutionManagement {
-  repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-  repositories {
-    google()
-    mavenCentral()
-  }
-}
-rootProject.name = "Podcast Time"
+package com.podcasttime.data.local.database
 
-include(":app")
+import androidx.room.Database
+import androidx.room.RoomDatabase
+
+@Database(entities = [CategoryEntity::class], version = 1)
+abstract class AppDatabase : RoomDatabase() {
+  abstract fun categoryEntityDao(): CategoryEntityDao
+}

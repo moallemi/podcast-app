@@ -17,5 +17,5 @@
 
 <resources>
 
-    <style name="Theme.SedaGard" parent="android:Theme.Material.Light.NoActionBar" />
+    <style name="Theme.PodcastTime" parent="android:Theme.Material.Light.NoActionBar" />
 </resources>

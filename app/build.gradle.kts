@@ -26,17 +26,17 @@ plugins {
 }
 
 android {
-  namespace = "com.sedagard"
+  namespace = "com.podcasttime"
   compileSdk = 34
 
   defaultConfig {
-    applicationId = "com.sedagard"
+    applicationId = "com.podcasttime"
     minSdk = 21
     targetSdk = 34
     versionCode = 1
     versionName = "1.0"
 
-    testInstrumentationRunner = "com.sedagard.HiltTestRunner"
+    testInstrumentationRunner = "com.podcasttime.HiltTestRunner"
     vectorDrawables {
       useSupportLibrary = true
     }
