@@ -2,15 +2,18 @@ package com.sedagard.ui.home.components
 
 import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.sedagard.data.HomePodcastRow
@@ -19,7 +22,14 @@ import com.sedagard.data.model.Podcast
 @Composable
 fun PodcastItem(item: HomePodcastRow) {
   Column {
-    Text(text = item.category.title)
+    Text(
+      modifier = Modifier
+        .padding(top = 8.dp)
+        .padding(horizontal = 16.dp),
+      text = item.category.title,
+      style = MaterialTheme.typography.titleMedium,
+      fontWeight = FontWeight.Bold,
+    )
     PodcastList(item.podcasts)
   }
 }
@@ -27,13 +37,13 @@ fun PodcastItem(item: HomePodcastRow) {
 @Composable
 private fun PodcastList(podcasts: List<Podcast>) {
   LazyRow(
-    horizontalArrangement = spacedBy(16.dp),
+    contentPadding = PaddingValues(16.dp),
+    horizontalArrangement = spacedBy(8.dp),
   ) {
     items(podcasts) { podcast ->
       Card(
         modifier = Modifier
-          .width(128.dp)
-          .height(164.dp),
+          .width(128.dp),
       ) {
         Column {
           AsyncImage(
@@ -42,7 +52,14 @@ private fun PodcastList(podcasts: List<Podcast>) {
             model = podcast.image,
             contentDescription = null,
           )
-          Text(text = podcast.title.orEmpty())
+          Text(
+            modifier = Modifier
+              .padding(8.dp),
+            text = podcast.title,
+            style = MaterialTheme.typography.bodyMedium,
+            minLines = 2,
+            maxLines = 2,
+          )
         }
       }
     }
