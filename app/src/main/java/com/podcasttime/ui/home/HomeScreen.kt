@@ -9,23 +9,28 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.podcasttime.ui.home.components.PodcastItem
 
 @Composable
-fun HomeScreen() {
+fun HomeScreen(
+  onPodcastClick: (podcastId: String) -> Unit,
+) {
   val viewModel = hiltViewModel<HomeViewModel>()
   val state by viewModel.state.collectAsStateWithLifecycle()
 
   HomeContent(
     state = state,
+    onPodcastClick = onPodcastClick,
   )
 }
 
 @Composable
 private fun HomeContent(
   state: HomeUiState,
+  onPodcastClick: (podcastId: String) -> Unit,
 ) {
   LazyColumn() {
     items(state.podcasts) { podcast ->
       PodcastItem(
         item = podcast,
+        onPodcastClick = onPodcastClick,
       )
     }
   }

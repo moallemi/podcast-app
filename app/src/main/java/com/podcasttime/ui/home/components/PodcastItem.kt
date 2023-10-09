@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,7 +21,10 @@ import com.podcasttime.data.HomePodcastRow
 import com.podcasttime.data.model.Podcast
 
 @Composable
-fun PodcastItem(item: HomePodcastRow) {
+fun PodcastItem(
+  item: HomePodcastRow,
+  onPodcastClick: (podcastId: String) -> Unit,
+) {
   Column {
     Text(
       modifier = Modifier
@@ -30,12 +34,19 @@ fun PodcastItem(item: HomePodcastRow) {
       style = MaterialTheme.typography.titleMedium,
       fontWeight = FontWeight.Bold,
     )
-    PodcastList(item.podcasts)
+    PodcastList(
+      podcasts = item.podcasts,
+      onPodcastClick = onPodcastClick,
+    )
   }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun PodcastList(podcasts: List<Podcast>) {
+private fun PodcastList(
+  podcasts: List<Podcast>,
+  onPodcastClick: (podcastId: String) -> Unit,
+) {
   LazyRow(
     contentPadding = PaddingValues(16.dp),
     horizontalArrangement = spacedBy(8.dp),
@@ -44,6 +55,7 @@ private fun PodcastList(podcasts: List<Podcast>) {
       Card(
         modifier = Modifier
           .width(128.dp),
+        onClick = { onPodcastClick(podcast.id) },
       ) {
         Column {
           AsyncImage(
