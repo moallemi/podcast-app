@@ -1,8 +1,12 @@
 package com.podcasttime.ui.home
 
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.podcasttime.data.HomePodcastRow
 import com.podcasttime.data.model.Category
@@ -14,7 +18,27 @@ fun HomeScreen(
   state: HomeUiState,
   onPodcastClick: (podcastId: String) -> Unit,
 ) {
-  LazyColumn() {
+  Scaffold(
+    modifier = Modifier.fillMaxSize(),
+    topBar = {
+    },
+    content = { paddingValues ->
+      HomeContent(
+        state = state,
+        onPodcastClick = onPodcastClick,
+        paddingValues = paddingValues,
+      )
+    },
+  )
+}
+
+@Composable
+fun HomeContent(
+  state: HomeUiState,
+  paddingValues: PaddingValues,
+  onPodcastClick: (podcastId: String) -> Unit,
+) {
+  LazyColumn(contentPadding = paddingValues) {
     items(state.podcasts) { podcast ->
       PodcastItem(
         item = podcast,
