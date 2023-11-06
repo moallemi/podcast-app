@@ -17,11 +17,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.podcasttime.R
 import com.podcasttime.data.HomePodcastRow
 import com.podcasttime.data.model.Podcast
 
@@ -52,12 +55,18 @@ private fun PodcastList(
   podcasts: List<Podcast>,
   onPodcastClick: (podcastId: String) -> Unit,
 ) {
+  val rowsCount = 2
+  val lazyListHeight = getLazyListHeight(
+    rowsCount,
+    dimensionResource(id = R.dimen.podcast_card_height),
+    dimensionResource(id = R.dimen.grid_list_vertical_padding),
+  )
   LazyHorizontalGrid(
-    modifier = Modifier.height(((192 * 2) + 8).dp),
-    rows = GridCells.Fixed(2),
+    modifier = Modifier.height(lazyListHeight),
+    rows = GridCells.Fixed(rowsCount),
     contentPadding = PaddingValues(16.dp),
-    horizontalArrangement = spacedBy(24.dp),
-    verticalArrangement = spacedBy(8.dp),
+    horizontalArrangement = spacedBy(dimensionResource(id = R.dimen.grid_list_horizontal_padding)),
+    verticalArrangement = spacedBy(dimensionResource(id = R.dimen.grid_list_vertical_padding)),
   ) {
     items(podcasts) { podcast ->
       Card(
@@ -91,4 +100,9 @@ private fun PodcastList(
       }
     }
   }
+}
+
+fun getLazyListHeight(rowsCount: Int, itemHeight: Dp, itemVerticalPadding: Dp): Dp {
+  return (itemHeight * rowsCount) +
+    (itemVerticalPadding * (rowsCount - 1))
 }
