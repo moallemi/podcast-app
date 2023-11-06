@@ -1,5 +1,6 @@
 package com.podcasttime.ui.home
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -7,9 +8,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -21,6 +24,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.tooling.preview.Preview
@@ -29,6 +33,8 @@ import com.podcasttime.data.HomePodcastRow
 import com.podcasttime.data.model.Category
 import com.podcasttime.data.model.Podcast
 import com.podcasttime.ui.home.components.PodcastItem
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 @Composable
 fun HomeScreen(
@@ -36,16 +42,26 @@ fun HomeScreen(
   onPodcastClick: (podcastId: String) -> Unit,
 ) {
   val categories = state.podcasts.map { it.category }
+
+  val coroutineScope = rememberCoroutineScope()
+  val listState = rememberLazyListState()
+  val onCategoryClicked = { index: Int ->
+    coroutineScope.launch {
+      listState.animateScrollToItem(index)
+    }
+  }
+
   Scaffold(
     modifier = Modifier.fillMaxSize(),
     topBar = {
-      HomeTopAppBar(categories)
+      HomeTopAppBar(categories, onCategoryClicked)
     },
     content = { paddingValues ->
       HomeContent(
-        state = state,
+        homeUiState = state,
         onPodcastClick = onPodcastClick,
         paddingValues = paddingValues,
+        listState = listState,
       )
     },
   )
@@ -53,7 +69,7 @@ fun HomeScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeTopAppBar(categories: List<Category>) {
+fun HomeTopAppBar(categories: List<Category>, onCategoryClicked: (Int) -> Job) {
   Column(modifier = Modifier.fillMaxWidth()) {
     CenterAlignedTopAppBar(
       navigationIcon = {
@@ -69,26 +85,33 @@ fun HomeTopAppBar(categories: List<Category>) {
         Text(text = "Podcast Time")
       },
     )
-    CategoryTabs(categories)
+    CategoryTabs(categories, onCategoryClicked)
   }
 }
 
 @Composable
-fun CategoryTabs(categories: List<Category>) {
+fun CategoryTabs(categories: List<Category>, onCategoryClicked: (Int) -> Job) {
   val selectedTabIndex = 1
   LazyRow(
-    modifier = Modifier.fillMaxWidth(),
+    modifier = Modifier
+      .fillMaxWidth()
+      .background(MaterialTheme.colorScheme.surface),
     horizontalArrangement = Arrangement.spacedBy(8.dp),
     contentPadding = PaddingValues(horizontal = 8.dp),
   ) {
     itemsIndexed(categories) { index: Int, category: Category ->
-      CategoryChip(selected = selectedTabIndex == index, index = index, text = category.title)
+      CategoryChip(
+        selected = selectedTabIndex == index,
+        index = index,
+        text = category.title,
+        onCategoryClicked,
+      )
     }
   }
 }
 
 @Composable
-fun CategoryChip(selected: Boolean, index: Int, text: String) {
+fun CategoryChip(selected: Boolean, index: Int, text: String, onCategoryClicked: (Int) -> Job) {
   Surface(
     color = if (selected) {
       MaterialTheme.colorScheme.primary.copy(alpha = 0.08f)
@@ -101,6 +124,9 @@ fun CategoryChip(selected: Boolean, index: Int, text: String) {
     } else {
       MaterialTheme.colorScheme.onSurface
     },
+    onClick = {
+      onCategoryClicked(index)
+    },
   ) {
     Text(
       modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
@@ -112,12 +138,13 @@ fun CategoryChip(selected: Boolean, index: Int, text: String) {
 
 @Composable
 fun HomeContent(
-  state: HomeUiState,
+  listState: LazyListState,
+  homeUiState: HomeUiState,
   paddingValues: PaddingValues,
   onPodcastClick: (podcastId: String) -> Unit,
 ) {
-  LazyColumn(contentPadding = paddingValues) {
-    items(state.podcasts) { podcast ->
+  LazyColumn(contentPadding = paddingValues, state = listState) {
+    items(homeUiState.podcasts) { podcast ->
       PodcastItem(
         item = podcast,
         onPodcastClick = onPodcastClick,
