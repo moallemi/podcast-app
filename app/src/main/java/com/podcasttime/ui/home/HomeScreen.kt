@@ -1,25 +1,26 @@
 package com.podcasttime.ui.home
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.ScrollableTabRow
-import androidx.compose.material3.Tab
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.tooling.preview.Preview
@@ -75,37 +76,36 @@ fun HomeTopAppBar(categories: List<Category>) {
 @Composable
 fun CategoryTabs(categories: List<Category>) {
   val selectedTabIndex = 1
-  ScrollableTabRow(
-    selectedTabIndex = selectedTabIndex,
-    edgePadding = 4.dp,
-    divider = {}, // no need for divider -> plain tab
-    indicator = {}, // no need for indicator -> plain tab
-    tabs = {
-      categories.forEachIndexed { index, category ->
-        TabChips(
-          selected = selectedTabIndex == index,
-          index = index,
-          category = category,
-        )
-      }
-    },
-  )
+  LazyRow(
+    modifier = Modifier.fillMaxWidth(),
+    horizontalArrangement = Arrangement.spacedBy(8.dp),
+    contentPadding = PaddingValues(horizontal = 8.dp),
+  ) {
+    itemsIndexed(categories) { index: Int, category: Category ->
+      CategoryChip(selected = selectedTabIndex == index, index = index, text = category.title)
+    }
+  }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TabChips(selected: Boolean, index: Int, category: Category) {
-  Tab(
-    selected = selected,
-    onClick = { /*TODO*/ },
-    modifier = Modifier.wrapContentWidth(Alignment.CenterHorizontally),
+fun CategoryChip(selected: Boolean, index: Int, text: String) {
+  Surface(
+    color = if (selected) {
+      MaterialTheme.colorScheme.primary.copy(alpha = 0.08f)
+    } else {
+      MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
+    },
+    shape = MaterialTheme.shapes.large,
+    contentColor = if (selected) {
+      MaterialTheme.colorScheme.primary
+    } else {
+      MaterialTheme.colorScheme.onSurface
+    },
   ) {
-    FilterChip(
-      selected = selected,
-      onClick = { /*TODO*/ },
-      label = {
-        Text(text = category.title)
-      },
+    Text(
+      modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+      text = text,
+      style = MaterialTheme.typography.bodyMedium,
     )
   }
 }
