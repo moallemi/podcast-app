@@ -24,6 +24,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -94,6 +95,11 @@ fun HomeTopAppBar(
       title = {
         Text(text = "Podcast Time")
       },
+      colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+        containerColor = MaterialTheme.colorScheme.primary,
+        navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
+        titleContentColor = MaterialTheme.colorScheme.onPrimary,
+      ),
     )
     CategoryTabs(categories, selectedTabIndex, onCategoryClicked)
   }
@@ -119,7 +125,7 @@ fun CategoryTabs(
   LazyRow(
     modifier = Modifier
       .fillMaxWidth()
-      .background(MaterialTheme.colorScheme.surface),
+      .background(MaterialTheme.colorScheme.primary),
     horizontalArrangement = Arrangement.spacedBy(8.dp),
     contentPadding = PaddingValues(horizontal = 8.dp),
   ) {
@@ -138,13 +144,13 @@ fun CategoryTabs(
 fun CategoryChip(selected: Boolean, index: Int, text: String, onCategoryClicked: (Int) -> Job) {
   Surface(
     color = if (selected) {
-      MaterialTheme.colorScheme.primary.copy(alpha = 0.08f)
+      MaterialTheme.colorScheme.tertiary
     } else {
-      MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
+      MaterialTheme.colorScheme.surface
     },
     shape = MaterialTheme.shapes.large,
     contentColor = if (selected) {
-      MaterialTheme.colorScheme.primary
+      MaterialTheme.colorScheme.onTertiary
     } else {
       MaterialTheme.colorScheme.onSurface
     },
