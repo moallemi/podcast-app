@@ -1,5 +1,6 @@
 package com.podcasttime.ui.home
 
+import android.app.Activity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -33,6 +34,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.podcasttime.data.HomePodcastRow
@@ -84,11 +86,14 @@ fun HomeTopAppBar(
   selectedTabIndex: Int,
   onCategoryClicked: (Int) -> Job,
 ) {
+  val activity = LocalContext.current as? Activity
+
   Column(modifier = Modifier.fillMaxWidth()) {
     CenterAlignedTopAppBar(
       navigationIcon = {
         ExitButton(
           onExitClicked = {
+            activity?.finish()
           },
         )
       },
