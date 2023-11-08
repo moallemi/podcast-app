@@ -34,19 +34,26 @@ fun PodcastItem(
   onPodcastClick: (podcastId: String) -> Unit,
 ) {
   Column {
-    Text(
-      modifier = Modifier
-        .padding(top = 8.dp)
-        .padding(horizontal = 16.dp),
-      text = item.category.title,
-      style = MaterialTheme.typography.titleMedium,
-      fontWeight = FontWeight.Bold,
-    )
+    CategoryText(homePodcastRow = item)
     PodcastList(
       podcasts = item.podcasts,
       onPodcastClick = onPodcastClick,
     )
   }
+}
+
+@Composable
+fun CategoryText(homePodcastRow: HomePodcastRow) {
+  Text(
+    modifier = Modifier
+      .fillMaxWidth()
+      .padding(top = 8.dp)
+      .padding(horizontal = 16.dp),
+    text = homePodcastRow.category.title,
+    style = MaterialTheme.typography.titleLarge,
+    fontWeight = FontWeight.Bold,
+    textAlign = TextAlign.Center,
+  )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
