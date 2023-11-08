@@ -24,7 +24,11 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.tooling.preview.Preview
@@ -45,8 +49,12 @@ fun HomeScreen(
 
   val coroutineScope = rememberCoroutineScope()
   val listState = rememberLazyListState()
+  var selectedTabIndex by remember {
+    mutableIntStateOf(0)
+  }
   val onCategoryClicked = { index: Int ->
     coroutineScope.launch {
+      selectedTabIndex = index
       listState.animateScrollToItem(index)
     }
   }
@@ -54,7 +62,7 @@ fun HomeScreen(
   Scaffold(
     modifier = Modifier.fillMaxSize(),
     topBar = {
-      HomeTopAppBar(categories, onCategoryClicked)
+      HomeTopAppBar(categories, selectedTabIndex, onCategoryClicked)
     },
     content = { paddingValues ->
       HomeContent(
@@ -69,29 +77,44 @@ fun HomeScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeTopAppBar(categories: List<Category>, onCategoryClicked: (Int) -> Job) {
+fun HomeTopAppBar(
+  categories: List<Category>,
+  selectedTabIndex: Int,
+  onCategoryClicked: (Int) -> Job,
+) {
   Column(modifier = Modifier.fillMaxWidth()) {
     CenterAlignedTopAppBar(
       navigationIcon = {
-        IconButton(onClick = { /*TODO*/ }) {
-          Icon(
-            modifier = Modifier.rotate(180f),
-            imageVector = Icons.Default.ExitToApp,
-            contentDescription = "Exit the app",
-          )
-        }
+        ExitButton(
+          onExitClicked = {
+          },
+        )
       },
       title = {
         Text(text = "Podcast Time")
       },
     )
-    CategoryTabs(categories, onCategoryClicked)
+    CategoryTabs(categories, selectedTabIndex, onCategoryClicked)
   }
 }
 
 @Composable
-fun CategoryTabs(categories: List<Category>, onCategoryClicked: (Int) -> Job) {
-  val selectedTabIndex = 1
+fun ExitButton(onExitClicked: () -> Unit) {
+  IconButton(onClick = { onExitClicked() }) {
+    Icon(
+      modifier = Modifier.rotate(180f),
+      imageVector = Icons.Default.ExitToApp,
+      contentDescription = "Exit the app",
+    )
+  }
+}
+
+@Composable
+fun CategoryTabs(
+  categories: List<Category>,
+  selectedTabIndex: Int,
+  onCategoryClicked: (Int) -> Job,
+) {
   LazyRow(
     modifier = Modifier
       .fillMaxWidth()
@@ -104,7 +127,7 @@ fun CategoryTabs(categories: List<Category>, onCategoryClicked: (Int) -> Job) {
         selected = selectedTabIndex == index,
         index = index,
         text = category.title,
-        onCategoryClicked,
+        onCategoryClicked = onCategoryClicked,
       )
     }
   }
