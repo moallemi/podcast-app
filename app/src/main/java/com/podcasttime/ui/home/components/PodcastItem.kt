@@ -56,7 +56,6 @@ fun CategoryText(homePodcastRow: HomePodcastRow) {
   )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun PodcastList(
   podcasts: List<Podcast>,
@@ -76,40 +75,45 @@ private fun PodcastList(
     verticalArrangement = spacedBy(dimensionResource(id = R.dimen.grid_list_vertical_padding)),
   ) {
     items(podcasts) { podcast ->
-      Card(
+      PodcastItem(podcast, onPodcastClick)
+    }
+  }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun PodcastItem(podcast: Podcast, onPodcastClick: (podcastId: String) -> Unit) {
+  Card(
+    modifier = Modifier
+      .width(128.dp)
+      .height(192.dp),
+    onClick = { onPodcastClick(podcast.id) },
+  ) {
+    Column {
+      AsyncImage(
         modifier = Modifier
           .width(128.dp)
-          .height(192.dp),
-        onClick = { onPodcastClick(podcast.id) },
-      ) {
-        Column {
-          AsyncImage(
-            modifier = Modifier
-              .width(128.dp)
-              .weight(4f),
-            model = podcast.image,
-            contentDescription = null,
-            contentScale = ContentScale.FillBounds,
-          )
-          Text(
-            modifier = Modifier
-              .padding(8.dp)
-              .fillMaxWidth()
-              .weight(1f),
-            text = podcast.title,
-            style = MaterialTheme.typography.bodyMedium,
-            minLines = 2,
-            maxLines = 2,
-            textAlign = TextAlign.Center,
-            overflow = TextOverflow.Ellipsis,
-          )
-        }
-      }
+          .weight(4f),
+        model = podcast.image,
+        contentDescription = null,
+        contentScale = ContentScale.FillBounds,
+      )
+      Text(
+        modifier = Modifier
+          .padding(8.dp)
+          .fillMaxWidth()
+          .weight(1f),
+        text = podcast.title,
+        style = MaterialTheme.typography.bodyMedium,
+        minLines = 2,
+        maxLines = 2,
+        textAlign = TextAlign.Center,
+        overflow = TextOverflow.Ellipsis,
+      )
     }
   }
 }
 
 fun getLazyListHeight(rowsCount: Int, itemHeight: Dp, itemVerticalPadding: Dp): Dp {
-  return (itemHeight * rowsCount) +
-    (itemVerticalPadding * (rowsCount - 1))
+  return (itemHeight * rowsCount) + (itemVerticalPadding * (rowsCount - 1))
 }
