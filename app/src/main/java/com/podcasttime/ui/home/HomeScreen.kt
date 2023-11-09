@@ -27,11 +27,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.platform.LocalContext
@@ -41,8 +38,6 @@ import com.podcasttime.data.HomePodcastRow
 import com.podcasttime.data.model.Category
 import com.podcasttime.data.model.Podcast
 import com.podcasttime.ui.home.components.PodcastItem
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 
 @Composable
 fun HomeScreen(
@@ -52,28 +47,34 @@ fun HomeScreen(
   val categories = state.podcasts.map { it.category }
 
   val coroutineScope = rememberCoroutineScope()
-  val listState = rememberLazyListState()
-  var selectedTabIndex by remember {
-    mutableIntStateOf(0)
-  }
-  val onCategoryClicked = { index: Int ->
-    coroutineScope.launch {
-      selectedTabIndex = index
-      listState.animateScrollToItem(index)
-    }
+  val podcastListState = rememberLazyListState()
+  val tabListState = rememberLazyListState()
+
+  val tabWithListStateHolder = remember {
+    TabWithListStateHolder(
+      coroutineScope = coroutineScope,
+      itemListState = podcastListState,
+      tabListState = tabListState,
+      categoryIndices = categories.indices.toList(),
+    )
   }
 
   Scaffold(
     modifier = Modifier.fillMaxSize(),
     topBar = {
-      HomeTopAppBar(categories, selectedTabIndex, onCategoryClicked)
+      HomeTopAppBar(
+        categories = categories,
+        selectedTabIndex = tabWithListStateHolder.selectedTab,
+        onCategoryClicked = tabWithListStateHolder.onTabClicked,
+        tabListState = tabListState,
+      )
     },
     content = { paddingValues ->
       HomeContent(
         homeUiState = state,
         onPodcastClick = onPodcastClick,
         paddingValues = paddingValues,
-        listState = listState,
+        listState = podcastListState,
       )
     },
   )
@@ -84,7 +85,8 @@ fun HomeScreen(
 fun HomeTopAppBar(
   categories: List<Category>,
   selectedTabIndex: Int,
-  onCategoryClicked: (Int) -> Job,
+  onCategoryClicked: (Int) -> Unit,
+  tabListState: LazyListState,
 ) {
   val activity = LocalContext.current as? Activity
 
@@ -106,7 +108,7 @@ fun HomeTopAppBar(
         titleContentColor = MaterialTheme.colorScheme.onPrimary,
       ),
     )
-    CategoryTabs(categories, selectedTabIndex, onCategoryClicked)
+    CategoryTabs(categories, selectedTabIndex, onCategoryClicked, tabListState)
   }
 }
 
@@ -125,7 +127,8 @@ fun ExitButton(onExitClicked: () -> Unit) {
 fun CategoryTabs(
   categories: List<Category>,
   selectedTabIndex: Int,
-  onCategoryClicked: (Int) -> Job,
+  onCategoryClicked: (Int) -> Unit,
+  tabListState: LazyListState,
 ) {
   LazyRow(
     modifier = Modifier
@@ -133,6 +136,7 @@ fun CategoryTabs(
       .background(MaterialTheme.colorScheme.primary),
     horizontalArrangement = Arrangement.spacedBy(8.dp),
     contentPadding = PaddingValues(horizontal = 8.dp),
+    state = tabListState,
   ) {
     itemsIndexed(categories) { index: Int, category: Category ->
       CategoryChip(
@@ -146,7 +150,7 @@ fun CategoryTabs(
 }
 
 @Composable
-fun CategoryChip(selected: Boolean, index: Int, text: String, onCategoryClicked: (Int) -> Job) {
+fun CategoryChip(selected: Boolean, index: Int, text: String, onCategoryClicked: (Int) -> Unit) {
   Surface(
     color = if (selected) {
       MaterialTheme.colorScheme.tertiary
