@@ -15,7 +15,7 @@ class TabWithListStateHolder(
   private val coroutineScope: CoroutineScope,
   private val itemListState: LazyListState,
   private val tabListState: LazyListState,
-  private val categoryIndices: List<Int>,
+  private val tabIndices: List<Int>,
 ) {
   var selectedTab by mutableIntStateOf(0)
 
@@ -36,21 +36,48 @@ class TabWithListStateHolder(
     coroutineScope.launch {
       snapshotFlow {
         itemListState.layoutInfo
-      }.debounce(100) // add a delay to give tabListState.animateScrollToItem time to scroll to desired pos
+      }.debounce(100) // add a delay to give tabListState.animateScrollToItem the time to scroll to desired pos
         .collectLatest {
-          var itemPosition = itemListState.firstVisibleItemIndex
-          if (itemListState.layoutInfo.visibleItemsInfo.isNotEmpty()) {
-            if (categoryIndices.isNotEmpty()) {
-              if (categoryIndices.last() == itemListState.layoutInfo.visibleItemsInfo.last().index) {
-                itemPosition = itemListState.layoutInfo.visibleItemsInfo.last().index
-              }
+          if (tabIndices.isNotEmpty()) {
+            var itemPosition = itemListState.findFirstFullyVisibleItemIndex()
+
+            if (itemPosition == -1) {
+              itemPosition = itemListState.firstVisibleItemIndex
             }
-          }
-          if (itemPosition != selectedTab) {
-            selectedTab = itemPosition
-            tabListState.animateScrollToItem(itemPosition)
+
+            if (itemPosition == -1) {
+              return@collectLatest
+            }
+
+            if ((tabIndices.last() == itemListState.findLastFullyVisibleItemIndex()) &&
+              (selectedTab !in itemListState.firstVisibleItemIndex until tabIndices.last())
+            ) {
+              itemPosition = tabIndices.last()
+            }
+
+            if (itemPosition != selectedTab) {
+              selectedTab = itemPosition
+              tabListState.animateScrollToItem(itemPosition)
+            }
           }
         }
     }
   }
+}
+
+fun LazyListState.findFirstFullyVisibleItemIndex(): Int =
+  findFullyVisibleItemIndex(reversed = false)
+
+fun LazyListState.findLastFullyVisibleItemIndex(): Int = findFullyVisibleItemIndex(reversed = true)
+fun LazyListState.findFullyVisibleItemIndex(reversed: Boolean): Int {
+  layoutInfo.visibleItemsInfo.run { if (reversed) reversed() else this }.forEach { itemInfo ->
+    val itemStartOffset = itemInfo.offset
+    val itemEndOffset = itemInfo.offset + itemInfo.size
+    val viewportStartOffset = layoutInfo.viewportStartOffset
+    val viewportEndOffset = layoutInfo.viewportEndOffset
+    if (itemStartOffset >= viewportStartOffset && itemEndOffset <= viewportEndOffset) {
+      return itemInfo.index
+    }
+  }
+  return -1
 }

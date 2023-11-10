@@ -50,12 +50,12 @@ fun HomeScreen(
   val podcastListState = rememberLazyListState()
   val tabListState = rememberLazyListState()
 
-  val tabWithListStateHolder = remember {
+  val tabWithListStateHolder = remember(state.podcasts) {
     TabWithListStateHolder(
       coroutineScope = coroutineScope,
       itemListState = podcastListState,
       tabListState = tabListState,
-      categoryIndices = categories.indices.toList(),
+      tabIndices = state.podcasts.map { it.category }.indices.toList(),
     )
   }
 
