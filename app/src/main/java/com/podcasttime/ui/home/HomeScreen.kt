@@ -194,7 +194,8 @@ fun HomeContent(
 @Preview
 @Composable
 fun HomeScreenPreview() {
-  val mockState = HomeUiState(isLoading = false, mockHomePodcastRow)
+  val mockState =
+    HomeUiState(isLoading = false, podcasts = mockHomePodcastRow, categories = mockCategories)
   HomeScreen(state = mockState, onPodcastClick = {})
 }
 
@@ -202,26 +203,27 @@ val mockPodcasts = listOf(
   Podcast(
     id = "1",
     title = "Sample 1",
-    image = "https://via.placeholder.com/150/56a8c2",
+    image = "",
   ),
   Podcast(
     id = "1",
     title = "Sample 1",
-    image = "https://via.placeholder.com/150/56a8c2",
+    image = "",
   ),
   Podcast(
     id = "1",
     title = "Sample 1",
-    image = "https://via.placeholder.com/150/56a8c2",
+    image = "",
   ),
   Podcast(
     id = "1",
     title = "Sample 1",
-    image = "https://via.placeholder.com/150/56a8c2",
+    image = "",
   ),
 )
+val mockCategories = listOf(Category("Check"), Category("Check2"))
 
 val mockHomePodcastRow = listOf(
-  HomePodcastRow(Category("Check"), mockPodcasts),
-  HomePodcastRow(Category("Check2"), mockPodcasts),
+  HomePodcastRow(mockCategories[0], mockPodcasts),
+  HomePodcastRow(mockCategories[1], mockPodcasts),
 )
