@@ -85,14 +85,14 @@ private fun PodcastList(
 fun PodcastItem(podcast: Podcast, onPodcastClick: (podcastId: String) -> Unit) {
   Card(
     modifier = Modifier
-      .width(128.dp)
-      .height(192.dp),
+      .width(dimensionResource(id = R.dimen.podcast_card_width))
+      .height(dimensionResource(id = R.dimen.podcast_card_height)),
     onClick = { onPodcastClick(podcast.id) },
   ) {
     Column {
       AsyncImage(
         modifier = Modifier
-          .width(128.dp)
+          .width(dimensionResource(id = R.dimen.podcast_card_width))
           .weight(4f),
         model = podcast.image,
         contentDescription = null,
