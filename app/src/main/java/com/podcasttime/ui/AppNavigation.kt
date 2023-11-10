@@ -7,7 +7,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.podcasttime.ui.detail.PodcastDetailScreen
-import com.podcasttime.ui.home.HomeScreen
+import com.podcasttime.ui.home.HomeRoute
 
 @Composable
 fun AppNavigation() {
@@ -15,7 +15,7 @@ fun AppNavigation() {
 
   NavHost(navController = navController, startDestination = "home") {
     composable("home") {
-      HomeScreen(
+      HomeRoute(
         onPodcastClick = { podcastId ->
           navController.navigate("podcastDetail/$podcastId")
         },

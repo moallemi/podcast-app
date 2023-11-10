@@ -26,7 +26,13 @@ class HomeViewModel @Inject constructor(
     viewModelScope.launch {
       _state.update { it.copy(isLoading = true) }
       val result = homeRepository.getPodcastCatalog()
-      _state.update { it.copy(isLoading = false, podcasts = result) }
+      _state.update { homeUiState ->
+        homeUiState.copy(
+          isLoading = false,
+          podcasts = result,
+          categories = result.map { it.category },
+        )
+      }
     }
   }
 }

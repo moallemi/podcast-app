@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="podcast_card_height">192dp</dimen>
+    <dimen name="podcast_card_width">128dp</dimen>
+    <dimen name="grid_list_vertical_padding">8dp</dimen>
+    <dimen name="grid_list_horizontal_padding">24dp</dimen>
+</resources>
