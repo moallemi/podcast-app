@@ -44,18 +44,16 @@ fun HomeScreen(
   state: HomeUiState,
   onPodcastClick: (podcastId: String) -> Unit,
 ) {
-  val categories = state.podcasts.map { it.category }
-
   val coroutineScope = rememberCoroutineScope()
   val podcastListState = rememberLazyListState()
   val tabListState = rememberLazyListState()
 
-  val tabWithListStateHolder = remember(state.podcasts) {
+  val tabWithListStateHolder = remember(state.categories) {
     TabWithListStateHolder(
       coroutineScope = coroutineScope,
       itemListState = podcastListState,
       tabListState = tabListState,
-      tabIndices = state.podcasts.map { it.category }.indices.toList(),
+      tabIndices = state.categories.indices.toList(),
     )
   }
 
@@ -63,7 +61,7 @@ fun HomeScreen(
     modifier = Modifier.fillMaxSize(),
     topBar = {
       HomeTopAppBar(
-        categories = categories,
+        categories = state.categories,
         selectedTabIndex = tabWithListStateHolder.selectedTab,
         onCategoryClicked = tabWithListStateHolder.onTabClicked,
         tabListState = tabListState,
@@ -153,13 +151,13 @@ fun CategoryTabs(
 fun CategoryChip(selected: Boolean, index: Int, text: String, onCategoryClicked: (Int) -> Unit) {
   Surface(
     color = if (selected) {
-      MaterialTheme.colorScheme.tertiary
+      MaterialTheme.colorScheme.secondary
     } else {
       MaterialTheme.colorScheme.surface
     },
     shape = MaterialTheme.shapes.large,
     contentColor = if (selected) {
-      MaterialTheme.colorScheme.onTertiary
+      MaterialTheme.colorScheme.onSecondary
     } else {
       MaterialTheme.colorScheme.onSurface
     },
