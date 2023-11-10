@@ -44,27 +44,14 @@ fun HomeScreen(
   state: HomeUiState,
   onPodcastClick: (podcastId: String) -> Unit,
 ) {
-  val coroutineScope = rememberCoroutineScope()
   val podcastListState = rememberLazyListState()
-  val tabListState = rememberLazyListState()
-
-  val tabWithListStateHolder = remember(state.categories) {
-    TabWithListStateHolder(
-      coroutineScope = coroutineScope,
-      itemListState = podcastListState,
-      tabListState = tabListState,
-      tabIndices = state.categories.indices.toList(),
-    )
-  }
 
   Scaffold(
     modifier = Modifier.fillMaxSize(),
     topBar = {
       HomeTopAppBar(
         categories = state.categories,
-        selectedTabIndex = tabWithListStateHolder.selectedTab,
-        onCategoryClicked = tabWithListStateHolder.onTabClicked,
-        tabListState = tabListState,
+        podcastListState = podcastListState,
       )
     },
     content = { paddingValues ->
@@ -82,10 +69,19 @@ fun HomeScreen(
 @Composable
 fun HomeTopAppBar(
   categories: List<Category>,
-  selectedTabIndex: Int,
-  onCategoryClicked: (Int) -> Unit,
-  tabListState: LazyListState,
+  podcastListState: LazyListState,
 ) {
+  val tabListState = rememberLazyListState()
+  val coroutineScope = rememberCoroutineScope()
+
+  val tabWithListStateHolder = remember(categories) {
+    TabWithListStateHolder(
+      coroutineScope = coroutineScope,
+      itemListState = podcastListState,
+      tabListState = tabListState,
+      tabIndices = categories.indices.toList(),
+    )
+  }
   val activity = LocalContext.current as? Activity
 
   Column(modifier = Modifier.fillMaxWidth()) {
@@ -106,7 +102,12 @@ fun HomeTopAppBar(
         titleContentColor = MaterialTheme.colorScheme.onPrimary,
       ),
     )
-    CategoryTabs(categories, selectedTabIndex, onCategoryClicked, tabListState)
+    CategoryTabs(
+      categories = categories,
+      selectedTabIndex = tabWithListStateHolder.selectedTab,
+      onCategoryClicked = tabWithListStateHolder.onTabClicked,
+      tabListState = tabListState,
+    )
   }
 }
 
