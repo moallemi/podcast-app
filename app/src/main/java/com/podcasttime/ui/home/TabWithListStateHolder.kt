@@ -11,6 +11,8 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
 
+const val LIST_STATE_COLLECTING_DELAY = 100L
+
 class TabWithListStateHolder(
   private val coroutineScope: CoroutineScope,
   private val itemListState: LazyListState,
@@ -36,7 +38,7 @@ class TabWithListStateHolder(
     coroutineScope.launch {
       snapshotFlow {
         itemListState.layoutInfo
-      }.debounce(100) // add a delay to give tabListState.animateScrollToItem the time to scroll to desired pos
+      }.debounce(LIST_STATE_COLLECTING_DELAY)
         .collectLatest {
           if (tabIndices.isNotEmpty()) {
             var itemPosition = itemListState.findFirstFullyVisibleItemIndex()
